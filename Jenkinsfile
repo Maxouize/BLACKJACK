@@ -70,7 +70,7 @@ pipeline {
 			always {
 				junit '**/surefire-reports/*.xml'
 				// archiveArtifacts 'target/*.jar'
-				// recordIssues enabledForFailure: true, tool: [mavenConsole(), java(), javaDoc()]
+				recordIssues enabledForFailure: true, tool: [mavenConsole(), java(), javaDoc()]
 				recordIssues enabledForFailure: true, tool: checkStyle()
 				recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
 				recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
