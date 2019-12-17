@@ -49,19 +49,21 @@ pipeline {
       stage('Build') {
           steps {
 			echo "Build..."
-              sh 'mvn clean package'
+            sh 'mvn clean'
+            echo "Clean done"
+            sh 'mvn package'
+			echo "Fin Build..."
           }
       }
       
-      stage ('Analyse'){
+      /*stage ('Analyse'){
 		steps {
 			echo "Analyse..."
 			sh 'mvn checkstyle:checkstyle'
 			sh 'mvn pmd:pmd'
 			sh 'mvn spotbugs:spotbugs'
       	}
-      }
-     
+      }*/
    }
    	post {
 		always {
