@@ -49,9 +49,9 @@ pipeline {
       stage('Build') {
           steps {
 			echo "Build..."
-            sh 'mvn clean'
+            bat 'mvn clean'
             echo "Clean done"
-            sh 'mvn package'
+            bat 'mvn package'
 			echo "Fin Build..."
           }
       }
