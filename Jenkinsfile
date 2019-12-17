@@ -56,13 +56,25 @@ pipeline {
           }
       }
       
-      /*stage ('Analyse'){
+      stage ('Analyse'){
 		steps {
 			echo "Analyse..."
-			sh 'mvn checkstyle:checkstyle'
-			sh 'mvn pmd:pmd'
-			sh 'mvn spotbugs:spotbugs'
+			bat 'mvn checkstyle:checkstyle'
+			bat 'mvn pmd:pmd'
+			bat 'mvn spotbugs:spotbugs'
       	}
-      }*/
+      }
    }
+		  
+		   post {
+			always {
+				junit '**/surefire-reports/*.xml'
+				// archiveArtifacts 'target/*.jar'
+				recordIssues enabledForFailure: true, tool: [mavenConsole(), java(), javaDoc()]
+				recordIssues enabledForFailure: true, tool: checkStyle()
+				recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
+				recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
+				recordIssues enabledForFailure: true, tool: spotBugs()
+			}
+         }
 }
