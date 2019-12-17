@@ -63,6 +63,14 @@ pipeline {
 			}
          }
       }
+      stage ('Analyse'){
+		steps {
+			echo "Analyse..."
+			sh 'mvn checkstyle:checkstyle'
+			sh 'mvn pmd:pmd'
+			sh 'mvn spotbugs:spotbugs '
+      }
+      }
       
       /*
       Ce stage ne se lance que si isSnapshot est vrai
