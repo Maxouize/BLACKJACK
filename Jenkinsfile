@@ -27,11 +27,6 @@ pipeline {
    agent any
 
    stages {
-      /*stage('Checkout') {
-         steps {
-            checkout([$class: 'GitSCM', branches: [[name: '*/develop']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/fhoubart/demo-cicd.git']]])
-         }
-      }*/
       stage('Get info from POM') {
           steps {
             script {
