@@ -48,51 +48,31 @@ pipeline {
       }
       stage('Build') {
           steps {
-              sh 'mvn clean package'
+			echo "Build..."
+              sh 'mvn package'
+			echo "Fin Build..."
           }
-		  
-		   post {
-			always {
-				junit '**/surefire-reports/*.xml'
-				// archiveArtifacts 'target/*.jar'
-				recordIssues enabledForFailure: true, tool: [mavenConsole(), java(), javaDoc()]
-				recordIssues enabledForFailure: true, tool: checkStyle()
-				recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
-				recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
-				recordIssues enabledForFailure: true, tool: spotBugs()
-			}
-         }
       }
-      stage ('Analyse'){
+      
+      /*stage ('Analyse'){
 		steps {
 			echo "Analyse..."
 			sh 'mvn checkstyle:checkstyle'
 			sh 'mvn pmd:pmd'
-			sh 'mvn spotbugs:spotbugs '
-      }
-      }
-      
-      /*
-      Ce stage ne se lance que si isSnapshot est vrai
-      Comme on pousse un Snapshot, on utilise le plugin deploy:deploy-file, cela permet de ne pas mettre les param�tres du Repo dans le pom.xml
-      */
-      /*stage('Push SNAPSHOT to Nexus') {
-          when { expression { isSnapshot } }
-          steps {
-              sh "mvn deploy:deploy-file -e -DgroupId=${groupId} -Dversion=${version} -Dpackaging=${packaging} -Durl=${nexusUrl}/repository/${nexusRepoSnapshot} -Dfile=${filepath} -DartifactId=${artifactId} -DrepositoryId=${mavenRepoId}"
-
-          }
+			sh 'mvn spotbugs:spotbugs'
+      	}
       }*/
      
-     /*
-     Ce stage ne se lance que si isSnapshot est faux
-     On pousse la release via le plugin Nexus
-     */
-      /*stage('Push RELEASE to Nexus') {
-          when { expression { !isSnapshot } }
-          steps {
-            nexusPublisher nexusInstanceId: 'nexus_localhost', nexusRepositoryId: "${nexusRepoRelease}", packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: "${filepath}"]], mavenCoordinate: [artifactId: "${artifactId}", groupId: "${groupId}", packaging: "${packaging}", version: "${version}"]]]
-          }
-      }*/
    }
+   	post {
+		always {
+			junit '**/surefire-reports/*.xml'
+			// archiveArtifacts 'target/*.jar'
+			recordIssues enabledForFailure: true, tool: [mavenConsole(), java(), javaDoc()]
+			recordIssues enabledForFailure: true, tool: checkStyle()
+			recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
+			recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
+			recordIssues enabledForFailure: true, tool: spotBugs()
+		}
+	}
 }
