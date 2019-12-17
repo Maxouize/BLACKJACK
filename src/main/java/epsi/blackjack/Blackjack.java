@@ -104,7 +104,7 @@ public class Blackjack {
 			System.out.println("Cartes dealer:" + dealerCards.toString());
 
 			if ((dealerCards.cardsValue() > playerCards.cardsValue()) && endRound == false) {
-				System.out.println("Dealer beats you " + dealerCards.cardsValue() + " to " + playerCards.cardsValue());
+				System.out.println("Dealer vous a battu " + dealerCards.cardsValue() + " à " + playerCards.cardsValue() + ".");
 				playerMoney -= playerBet;
 				endRound = true;
 			}
