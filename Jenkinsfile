@@ -4,7 +4,8 @@ def nexusId = 'nexus_localhost'
 /* *** Configuration de Nexus pour Maven ***/
 // URL de Nexus
 def nexusUrl = 'http://localhost:8081'
-// Repo Id (provient du settings.xml nexus pour rï¿½cupï¿½rer user/password)
+
+// Repo Id (provient du settings.xml nexus pour récupérer user/password)
 def mavenRepoId = 'nexusLocal'
 
 /* *** Repositories Nexus *** */
@@ -13,7 +14,7 @@ def nexusRepoRelease = "maven-releases"
 
 
 
-/* *** Dï¿½tail du projet, rï¿½cupï¿½rï¿½ dans le pipeline en lisant le pom.xml *** */
+/* *** Détail du projet, récupéré dans le pipeline en lisant le pom.xml *** */
 def groupId = ''
 def artefactId = ''
 def filePath = ''
@@ -76,55 +77,40 @@ pipeline {
 			bat 'mvn pmd:pmd'
 			bat 'mvn spotbugs:spotbugs'
       	}
-  	stage("publish to nexus") {
-        steps {
-            script {
-                pom = readMavenPom file: "pom.xml";
-                filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
-                echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
-                artifactPath = filesByGlob[0].path;
-                artifactExists = fileExists artifactPath;
-                if(artifactExists) {
-                    echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
-                    nexusArtifactUploader(
-                        nexusVersion: NEXUS_VERSION,
-                        protocol: NEXUS_PROTOCOL,
-                        nexusUrl: NEXUS_URL,
-                        groupId: pom.groupId,
-                        version: pom.version,
-                        repository: NEXUS_REPOSITORY,
-                        credentialsId: NEXUS_CREDENTIAL_ID,
-                        artifacts: [
-                            // Artifact generated such as .jar, .ear and .war files.
-                            [artifactId: pom.artifactId,
-                            classifier: '',
-                            file: artifactPath,
-                            type: pom.packaging],
-                            // Lets upload the pom.xml file for additional information for Transitive dependencies
-                            [artifactId: pom.artifactId,
-                            classifier: '',
-                            file: "pom.xml",
-                            type: "pom"]
-                        ]
-                    );
-                } else {
-                    error "*** File: ${artifactPath}, could not be found";
-                }
-            }
+      	
+  	  /*
+      Ce stage ne se lance que si isSnapshot est vrai
+      Comme on pousse un Snapshot, on utilise le plugin deploy:deploy-file, cela permet de ne pas mettre les paramètres du Repo dans le pom.xml
+      */
+      stage('Push SNAPSHOT to Nexus') {
+          when { expression { isSnapshot } }
+          steps {
+              sh "mvn deploy:deploy-file -e -DgroupId=${groupId} -Dversion=${version} -Dpackaging=${packaging} -Durl=${nexusUrl}/repository/${nexusRepoSnapshot}/ -Dfile=${filepath} -DartifactId=${artifactId} -DrepositoryId=${mavenRepoId}"
+
           }
-        }
+      }
+     
+     /*
+     Ce stage ne se lance que si isSnapshot est faux
+     On pousse la release via le plugin Nexus
+     */
+      stage('Push RELEASE to Nexus') {
+          when { expression { !isSnapshot } }
+          steps {
+            nexusPublisher nexusInstanceId: 'nexus_localhost', nexusRepositoryId: "${nexusRepoRelease}", packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: "${filepath}"]], mavenCoordinate: [artifactId: "${artifactId}", groupId: "${groupId}", packaging: "${packaging}", version: "${version}"]]]
+          }
       }
    }
 		  
-		   post {
-			always {
-				junit '**/surefire-reports/*.xml'
-				// archiveArtifacts 'target/*.jar'
-				recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
-				recordIssues enabledForFailure: true, tool: checkStyle()
-				recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
-				recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
-				recordIssues enabledForFailure: true, tool: spotBugs()
-			}
-         }
+	post {
+		always {
+			junit '**/surefire-reports/*.xml'
+			// archiveArtifacts 'target/*.jar'
+			recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
+			recordIssues enabledForFailure: true, tool: checkStyle()
+			recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
+			recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
+			recordIssues enabledForFailure: true, tool: spotBugs()
+		}
+ 	}
 }
