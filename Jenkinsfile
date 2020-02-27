@@ -5,7 +5,7 @@ def nexusId = 'nexus_localhost'
 // URL de Nexus
 def nexusUrl = 'http://localhost:8081'
 
-// Repo Id (provient du settings.xml nexus pour récupérer user/password)
+// Repo Id (provient du settings.xml nexus pour rï¿½cupï¿½rer user/password)
 def mavenRepoId = 'nexusLocal'
 
 /* *** Repositories Nexus *** */
@@ -14,7 +14,7 @@ def nexusRepoRelease = "maven-releases"
 
 
 
-/* *** Détail du projet, récupéré dans le pipeline en lisant le pom.xml *** */
+/* *** Dï¿½tail du projet, rï¿½cupï¿½rï¿½ dans le pipeline en lisant le pom.xml *** */
 def groupId = ''
 def artefactId = ''
 def filePath = ''
@@ -77,10 +77,10 @@ pipeline {
 			bat 'mvn pmd:pmd'
 			bat 'mvn spotbugs:spotbugs'
       	}
-      	
+      }
   	  /*
       Ce stage ne se lance que si isSnapshot est vrai
-      Comme on pousse un Snapshot, on utilise le plugin deploy:deploy-file, cela permet de ne pas mettre les paramètres du Repo dans le pom.xml
+      Comme on pousse un Snapshot, on utilise le plugin deploy:deploy-file, cela permet de ne pas mettre les paramï¿½tres du Repo dans le pom.xml
       */
       stage('Push SNAPSHOT to Nexus') {
           when { expression { isSnapshot } }
