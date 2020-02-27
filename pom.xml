@@ -9,6 +9,13 @@
 
 	<name>blackjack</name>
 
+	<repositories>
+		<repository>
+			<id>nexus_localhost</id>
+			<url>http://localhost:8081/repository/maven-snapshots/</url>
+		</repository>
+	</repositories>
+  
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
