@@ -25,6 +25,8 @@ def isSnapshot = true
 
 pipeline {
    agent any
+	
+   stages {
       stage('Get info from POM') {
           steps {
             script {
