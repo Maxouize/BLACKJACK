@@ -1,5 +1,5 @@
 // Lien vers Nexus, doit correspondre � l'instance param�tr�e dans Jenkins
-def nexusId = 'nexus_localhost'
+def nexusId = 'nexus'
 
 /* *** Configuration de Nexus pour Maven ***/
 // URL de Nexus
@@ -30,11 +30,11 @@ environment {
     // This can be http or https
     NEXUS_PROTOCOL = "http"
     // Where your Nexus is running
-    NEXUS_URL = "http://localhost:8082"
+    NEXUS_URL = "http://localhost:8081"
     // Repository where we will upload the artifact
     NEXUS_REPOSITORY = "repository-example"
     // Jenkins credential id to authenticate to Nexus OSS
-    NEXUS_CREDENTIAL_ID = "nexus-credentials"
+    NEXUS_CREDENTIAL_ID = "nexussonar"
 }
     
 pipeline {
@@ -97,7 +97,7 @@ pipeline {
       stage('Push RELEASE to Nexus') {
           when { expression { !isSnapshot } }
           steps {
-            nexusPublisher nexusInstanceId: 'nexus_localhost', nexusRepositoryId: "${nexusRepoRelease}", packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: "${filepath}"]], mavenCoordinate: [artifactId: "${artifactId}", groupId: "${groupId}", packaging: "${packaging}", version: "${version}"]]]
+            nexusPublisher nexusInstanceId: 'nexus', nexusRepositoryId: "${nexusRepoRelease}", packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: "${filepath}"]], mavenCoordinate: [artifactId: "${artifactId}", groupId: "${groupId}", packaging: "${packaging}", version: "${version}"]]]
           }
       }
    }
