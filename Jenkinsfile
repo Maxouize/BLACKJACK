@@ -102,20 +102,6 @@ pipeline {
       }
    }
 		  
-<<<<<<< HEAD
-		   post {
-			always {
-				junit '**/surefire-reports/*.xml'
-				// archiveArtifacts 'target/*.jar'
-				recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
-				recordIssues enabledForFailure: true, tool: checkStyle()
-				recordIssues enabledForFailure: true, tool: cpd(pattern: '**/target/cpd.xml')
-				recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
-				recordIssues enabledForFailure: true, tool: spotBugs()
-			}
-         }
-}
-=======
 	post {
 		always {
 			junit '**/surefire-reports/*.xml'
@@ -128,4 +114,3 @@ pipeline {
 		}
  	}
 }
->>>>>>> feature/init_nexus
