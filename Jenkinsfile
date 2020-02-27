@@ -25,14 +25,6 @@ def isSnapshot = true
 
 pipeline {
    agent any
-
-   stages {
-	   stage('debug') {
-		   steps {
-			   bat 'java -version'
-			   bat 'where java'
-		   }
-	   }
       stage('Get info from POM') {
           steps {
             script {
